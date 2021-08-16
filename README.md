@@ -30,6 +30,8 @@ You may be interested - [Why random is faster than brute force](https://github.c
 - For Multi GPUs use LostCoins.exe -t 0 --gpu --gpux 256,256,256,256 --gpui 0,1 -f test.bin -r 4 -n 3
 - -x default auto Grid size. Example my RTX2070 in auto -x 256,128 I added LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 4 -n 3 the speed has doubled.
 - Do not use the GPU + CPU will drop the speed. It is better to run 2 copies of the program one on the CPU and the second on the GPU
+- **For search words USE modes -u or -b** It is slower then increases the chance of finding a word
+- You can search hashes160 of other coins, if it finds it, it will give an empty legacy address
 ## Parametrs:
 ```
 Usage: LostCoins [options...]
@@ -150,7 +152,7 @@ Bloom at 000002B4B4F6C900
  - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 9 -n 8```
  - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 9 -n 8```
 ## Mode 10
-### Generate passphrase from -n ? random letters (ab-zA-Z0-9)
+### Generate passphrase from -n ? random letters (a-zA-Z0-9)
  - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 10 -n 8```
  - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 10 -n 8```
 ## Mode 11
