@@ -8,7 +8,7 @@ Huge thanks [kanhavishva](https://github.com/kanhavishva) and to all developers 
  - The developer suggested using compressed addresses to ease the load on the network.
  - On March 31, 2012, BitCoin Core v0.6 was released in which Compressed was used to generate new addresses.
  - Outwardly, you will not see the difference between Legacy compressed and uncompressed addresses! 
- - From dumps transactions on 03/31/2012, I collected a [database](https://github.com/phrutis/LostCoins/blob/main/Others/Un-all.txt) of uncompressed addresses with a positive balance for today.
+ - From [dumps](https://blockchair.com/dumps) transactions on 03/31/2012, I collected a [database](https://github.com/phrutis/LostCoins/blob/main/Others/Un-all.txt) of uncompressed addresses with a positive balance for today.
  - Until 03/31/2012, most addresses were created using a [passphrase converted to a hash of Sha256](https://brainwalletx.github.io/) Bitcoin then cost a penny, the phrases were lost, and with them coins.
  - The task is to find a passphrase for old addresses from the database.For this task, LostCoins has many built-in word selection modes. 
  - Choose the best mode and start looking for coins 
