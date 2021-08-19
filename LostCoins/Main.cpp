@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <windows.h>
-#define RELEASE "1.1"
+#define RELEASE "1.2"
 
 using namespace std;
 using namespace argparse;
