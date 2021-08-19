@@ -1,89 +1,69 @@
-# LostCoins v1.0
-![alt text](https://github.com/phrutis/LostCoins/blob/main/Others/4.jpg "LostCoins")
-This is a modified version [VanitySearch](https://github.com/JeanLucPons/VanitySearch/). 
+# LostCoins
+ - This is a modified version [VanitySearch](https://github.com/JeanLucPons/VanitySearch/). 
 Huge thanks [kanhavishva](https://github.com/kanhavishva) and to all developers whose codes were used in LostCoins.
-## Project idea to find orphaned lost BitCoins
- - When Satoshi Nakamoto launched Bitcoin in 2009, he used Uncopressed addresses.
- - He found out about the existence of Compressed addresses only at the beginning of 2012.
- - The developer suggested using compressed addresses to ease the load on the network.
- - On March 31, 2012, BitCoin Core v0.6 was released in which Compressed was used to generate new addresses.
- - Outwardly, you will not see the difference between Legacy compressed and uncompressed addresses! 
- - From [dumps](https://blockchair.com/dumps) transactions on 03/31/2012, I collected a [database](https://github.com/phrutis/LostCoins/blob/main/Others/Un-all.txt) of uncompressed addresses with a positive balance for today.
- - Until 03/31/2012, most addresses were created using a [passphrase converted to a hash of Sha256](https://brainwalletx.github.io/) Bitcoin then cost a penny, the phrases were lost, and with them coins.
- - The task is to find a passphrase for old addresses from the database.For this task, LostCoins has many built-in word selection modes. 
- - Choose the best mode and start looking for coins 
-You may be interested - [Why random is faster than brute force](https://github.com/phrutis/LostCoins/blob/main/Others/Random.md)
-### For reference.
- - A total of 3,157,143 uncompressed addresses were created.
- - Today with a positive balance in total: 464.005 uncompressed [download](https://github.com/phrutis/LostCoins/blob/main/Others/Un-all.txt) addresses.
- - Sorted uncompressed addresses from 0.1 btc and higher. Happened: 75462 [download](https://github.com/phrutis/LostCoins/blob/main/Others/Un01.txt) addresses
- - Total words found [18972](https://allprivatekeys.com/hacked-brainwallets-with-balance) with addresses on which there were coins 
- - To check, we take any address from the file. We go to the blockchain and see the date of the first transaction. 
- - The first transaction must be before 03/31/2012, this confirms that the address is not compressed. 
-## How to start
-- For the program to work, you need to convert Legacy addresses (which start with 1) into binary hashes 160 RIPEMD160.
-- Use the program to convert b58dec.exe Сommand: ```b58dec.exe 1.txt 2.bin```
+## Quick start
+- Сonvert addresses into binary hashes RIPEMD160 use [b58dec.exe](https://github.com/phrutis/LostCoins/blob/main/Others/b58dec.exe) Сommand: ```b58dec.exe 1.txt 2.bin```
 - It is important to sort the 2.bin file otherwise the Bloom search filter will not work as expected.
-- To sort 2.bin use the program RMD160-Sort.exe Сommand: ```RMD160-Sort.exe 2.bin addresse160-Sort.bin```
+- To sort 2.bin use the program [RMD160-Sort.exe](https://github.com/phrutis/LostCoins/blob/main/Others/RMD160-Sort.exe) Сommand: ```RMD160-Sort.exe 2.bin addresse160-Sort.bin``` 
 - The minimum number of hashes160 in addresse160-Sort.bin must be at least 1000
-- There is a ready-made file for tests is `test.bin` inside 4 words of 3 letters Uncomressed: cat, gaz, for, car Compressed abc, cop, run, zip. [Make your own](https://brainwalletx.github.io/) addressed for test
-- For Multi GPUs use LostCoins.exe -t 0 --gpu --gpux 256,256,256,256 --gpui 0,1 -f test.bin -r 4 -n 3
-- -x default auto Grid size. Example my RTX2070 in auto -x 256,128 I added LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 4 -n 3 the speed has doubled.
-- Do not use the GPU + CPU will drop the speed. It is better to run 2 copies of the program one on the CPU and the second on the GPU
-- **For search words USE modes -u or -b** It is slower then increases the chance of finding a word
-- You can search hashes160 of other coins, if it finds it, it will give an empty legacy address
+- For Multi GPUs use LostCoins.exe -t 0 --gpu --gpux 256,256,256,256 --gpui 0,1 -f test.bin -r 2 -n 64
+- Default auto Grid size. Example my RTX2070 in auto -x 256,128 I added LostCoins.exe -t 0 -g -i 0 -x 288,512 the speed has doubled.
+- Do not use the GPU+CPU will drop the speed. Run 2 copies of the program one on the CPU and the second on the GPU
+- You can search hashes160 of other coins, if it finds it, it will give an empty legacy address and positive private key. Ctrl + C (exit)
 ## Parametrs:
 ```
+C:\Users\user>LostCoins.exe -h
 Usage: LostCoins [options...]
 Options:
     -v, --version          Print version. For help visit https://github.com/phrutis/LostCoins
-    -c, --check            Check the working of the code
-    -u, --uncomp           Search only uncompressed addresses Default: search compressed addresses
+    -c, --check            Check the working of the code LostCoins
+    -u, --uncomp           Search only uncompressed addresses
     -b, --both             Search both (uncompressed and compressed addresses)
     -g, --gpu              Enable GPU calculation
     -i, --gpui             GPU ids: 0,1...: List of GPU(s) to use, default is 0
     -x, --gpux             GPU gridsize: g0x,g0y,g1x,g1y, ...: Specify GPU(s) kernel gridsize, default is 8*(MP number),128
+    -t, --thread           ThreadNumber: Specify number of CPUs thread, default is number of core
     -o, --out              Outputfile: Output results to the specified file, default: Found.txt
-    -m, --max              Maximum positive results of addresses. Default: 100
-    -t, --thread           threadNumber: Specify number of CPU thread, default is number of core
-    -e, --nosse            Disable SSE hash function
-    -l, --list             List cuda enabled devices
-    -r, --rkey             0-60 number random modes
-    -n, --nbit             Number of letters in word or number bit range 1-256
-    -f, --file             RIPEMD160 binary hash file path
+    -m, --max              Specify maximun number of addresses found by each kernel call
     -s, --seed             PassPhrase   (Start bit range)
     -z, --zez              PassPhrase 2 (End bit range)
-    -d, --diz              Display modes -d 1 Show hashes, SLOW speed. -d 2 only counters, the fastest speed. -d 0 default
-    -k, --color            Color text in console 1-255 Recommended colors: 3, 10, 11, 14, 15, 240(White-black) Default: 15
-    -h, --help             Shows this page
+    -e, --nosse            Disable SSE hash function
+    -l, --list             List cuda enabled devices
+    -r, --rkey             Number of random modes
+    -n, --nbit             Number of letters and number bit range 1-256
+    -f, --file             RIPEMD160 binary hash file path
+    -d, --diz              Display modes -d 0 [info+count], -d 1 SLOW speed [info+hex+count], Default -d 2 [count] HIGH speed
+    -k, --color            Colors: 1-255 Recommended 3, 10, 11, 14, 15, 240 (White-black)
+    -h, --help             Shows this pagethis page
 
  ```
-## Example of work 
+## Mode 0 (For CPU) 
+### Constant generation random new hashes in a given range +- ~ 4 bit
  ```
-C:\Users\user>LostCoins.exe -b -t 0 -g -i 0 -x 288,512 -f test.bin -r 5 -n 3 -d 1
+C:\Users\user>LostCoins.exe -t 6 -f test.bin -r 0 -n 64
 
  LostCoins v1.0
 
- SEARCH MODE  : COMPRESSED & UNCOMPRESSED
- DEVICE       : GPU
- CPU THREAD   : 0
+ SEARCH MODE  : COMPRESSED
+ DEVICE       : CPU
+ CPU THREAD   : 6
  GPU IDS      : 0
- GPU GRIDSIZE : 288x512
- RANDOM MODE  : 5
- ROTOR SPEED  : SLOW (hashes sha256 are displayed)
- CHARACTERS   : 3
+ GPU GRIDSIZE : -1x128
+ RANDOM MODE  : 0
+ ROTOR SPEED  : HIGH
+ CHARACTERS   : 64
  PASSPHRASE   :
  PASSPHRASE 2 :
- DISPLAY MODE : 1
+ DISPLAY MODE : 2
  TEXT COLOR   : 15
- MAX FOUND    : 100
+ MAX FOUND    : 256
  HASH160 FILE : test.bin
  OUTPUT FILE  : Found.txt
 
-Loading       : 100 %
-Loaded        : 75,471 address
+ Loading      : 100 %
+ Loaded       : 75,471 address
 
-Bloom at 000002B4B4F6C900
+Bloom at 00000208E842B400
   Version     : 2.1
   Entries     : 150942
   Error       : 0,0000010000
@@ -92,272 +72,268 @@ Bloom at 000002B4B4F6C900
   Bytes       : 542546 (0 MB)
   Hash funcs  : 20
 
-  Start Time  : Tue Aug 17 00:12:58 2021
+  Start Time  : Thu Aug 19 11:10:12 2021
 
-  Random mode : 5
-  Passphrase  : (not supported)
-  Using       : 26 letters
-  List        : abcdefghijklmnopqrstuvwxyz
-  Rotor       : Generation of 3 random letters
+  Random mode : 0
+  Mode        : Constant generation random hashes
+  Reload      : Every 1 hex new
+  How work R0 : Cores generate hashes into a buffer
+  How work R0 : After they are sent to the device for checking with a bloom filter to find a positive bitcoin address.
+  How work R0 : Good speed for CPUs. For GPUs -r 0 slow! Use other mode -r 1,2,3,4 for speed
+  Range bit   : 64 (bit) recommended -n 256 (256 searches in the 256-252 range and below)
+  Site        : https://github.com/phrutis/LostCoins
+  Donate      : bc1qh2mvnf5fujg93mwl8pe688yucaw9sflmwsukz9
+
+ [00:01:26] [CPU+GPU: 13,83 Mk/s] [GPU: 0,00 Mk/s] [T: 1,193,570,304] [F: 0]
+ ```
+## Mode 1 
+### Random search between start and end hash
+ ```
+ C:\Users\user>LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 1 -s ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f0000000 -z ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61ffffffff
+
+ LostCoins v1.0
+
+ SEARCH MODE  : COMPRESSED
+ DEVICE       : GPU
+ CPU THREAD   : 0
+ GPU IDS      : 0
+ GPU GRIDSIZE : 288x512
+ RANDOM MODE  : 1
+ ROTOR SPEED  : HIGH
+ CHARACTERS   : 0
+ PASSPHRASE   : ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f0000000
+ PASSPHRASE 2 : ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61ffffffff
+ DISPLAY MODE : 2
+ TEXT COLOR   : 15
+ MAX FOUND    : 256
+ HASH160 FILE : test.bin
+ OUTPUT FILE  : Found.txt
+
+ Loading      : 100 %
+ Loaded       : 75,471 address
+
+Bloom at 00000278FADDCBF0
+  Version     : 2.1
+  Entries     : 150942
+  Error       : 0,0000010000
+  Bits        : 4340363
+  Bits/Elem   : 28,755175
+  Bytes       : 542546 (0 MB)
+  Hash funcs  : 20
+
+  Start Time  : Thu Aug 19 11:21:51 2021
+
+  Random mode : 1
+  Random      : Finding in a ranges
+  Global start: BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F0000000 (256 bit)
+  Global end  : BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61FFFFFFFF (256 bit)
+  Global range: FFFFFFF (28 bit)
   Site        : https://github.com/phrutis/LostCoins
   Donate      : bc1qh2mvnf5fujg93mwl8pe688yucaw9sflmwsukz9
 
   GPU         : GPU #0 NVIDIA GeForce RTX 2070 (36x64 cores) Grid(288x512)
 
- [iwp] [A0D9E4213834CE56775CF203FD8F0C93FC55D73EA905B669D4834EDE19A9A6C6]
+ [00:00:22] [CPU+GPU: 1217,95 Mk/s] [GPU: 1217,95 Mk/s] [T: 27,179,089,920] [F: 0]
+
+=================================================================================
+* PubAddress: 1PoQRMsXyQFSqCCRek7tt7umfRkJG9TY8x
+* Priv (WIF): p2pkh: L3UBXym7JYcMX91ssLgZzS2MvxTxjU3VRf9S4jJWXVFdDi4NsLcm
+* Priv (HEX): BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD
+=================================================================================
+
+ [00:00:24] [CPU+GPU: 1216,69 Mk/s] [GPU: 1216,69 Mk/s] [T: 29,896,998,912] [F: 1]
+
+=================================================================================
+* PubAddress: 1PoQRMsXyQFSqCCRek7tt7umfRkJG9TY8x
+* Priv (WIF): p2pkh: L3UBXym7JYcMX91ssLgZzS2MvxTxjU3VRf9S4jJWXVFdDi4NsLcm
+* Priv (HEX): BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD
+=================================================================================
+
+
+
+=================================================================================
+* PubAddress: 1PoQRMsXyQFSqCCRek7tt7umfRkJG9TY8x
+* Priv (WIF): p2pkh: L3UBXym7JYcMX91ssLgZzS2MvxTxjU3VRf9S4jJWXVFdDi4NsLcm
+* Priv (HEX): BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD
+=================================================================================
+
+ [00:00:30] [CPU+GPU: 1215,80 Mk/s] [GPU: 1215,80 Mk/s] [T: 37,144,756,224] [F: 3]
+
+=================================================================================
+* PubAddress: 1PoQRMsXyQFSqCCRek7tt7umfRkJG9TY8x
+* Priv (WIF): p2pkh: L3UBXym7JYcMX91ssLgZzS2MvxTxjU3VRf9S4jJWXVFdDi4NsLcm
+* Priv (HEX): BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD
+=================================================================================
+
+
+
+=================================================================================
+* PubAddress: 1PoQRMsXyQFSqCCRek7tt7umfRkJG9TY8x
+* Priv (WIF): p2pkh: L3UBXym7JYcMX91ssLgZzS2MvxTxjU3VRf9S4jJWXVFdDi4NsLcm
+* Priv (HEX): BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD
+=================================================================================
+
+ [00:00:32] [CPU+GPU: 1161,06 Mk/s] [GPU: 1161,06 Mk/s] [T: 38,956,695,552] [F: 5]
+
+BYE
  ```
-# Examples of how to use modes in LostCoins
- ![alt text](https://github.com/phrutis/LostCoins/blob/main/Others/2.jpg "LostCoins")
-## Mode 0
-### Generate passphrase from 3-9 random letters (a-z test)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 0```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 0```
-## Mode 1
-### Generate random public keys in bit range (Rotor-Cuda-R1)
-#### Constant random generation of new hashes
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 1 -n 256```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 1 -n 256```
-## Mode 2
-### Generate random public keys in bit range (Rotor-Cuda)
-#### Generating random hashes +value. Loading new hashes every 50.000.000.000 on the counter 
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 2 -n 256```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 2 -n 256```
-## Mode 3
-### Generate random public keys in bit range (Rotor-Cuda)
-#### Generating random hashes +value. Loading new hashes every 100.000.000.000 on the counter 
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 3 -n 256```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 3 -n 256```
-## Mode 4
-### Generate passphrase from -n ? random digits (0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 4 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 4 -n 8```
-## Mode 5
-### Generate passphrase from -n ? random letters (ab-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 5 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 5 -n 8```
-## Mode 6
-### Generate passphrase from -n ? random letters (A-Z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 6 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 6 -n 8```
-## Mode 7
-### Generate passphrase from -n ? random letters (a-z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 7 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 7 -n 8```
-## Mode 8
-### Generate passphrase from -n ? random letters (A-Z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 8 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 8 -n 8```
-## Mode 9
-### Generate passphrase from -n ? random letters (A-Za-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 9 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 9 -n 8```
-## Mode 10
-### Generate passphrase from -n ? random letters (a-zA-Z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 10 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 10 -n 8```
-## Mode 11
-### Generate passphrase from -n ? random letters (a-zA-Z0-9+symbols)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 11 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 11 -n 8```
-## Mode 12
-### Generate passphrase from -n ? random russian letters (а-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 12 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 12 -n 8```
-## Mode 13
-### Generate passphrase from -n ? random russian letters (А-Я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 13 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 13 -n 8```
-## Mode 14
-### Generate passphrase from -n ? random russian letters (А-Яа-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 14 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 14 -n 8```
-## Mode 15
-### Generate passphrase from -n ? random russian letters (А-Яа-я0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 15 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 15 -n 8```
-## Mode 16
-### Generate passphrase from -n ? random russian letters (А-Я-я0-9+symbols)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 16 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 16 -n 8```
-## Mode 17
-### Generate passphrase from words+ -n ? random digits (0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 17 -n 8 -s Word word2 word3 is work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 17 -n 8 -s Word word2 word3 is work```
-## Mode 18
-### Generate passphrase from words+ -n ? random letters (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 18 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 18 -n 8 -s Bitcoin```
-## Mode 19
-### Generate passphrase from words+ -n ? random letters (A-Z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 19 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 19 -n 8 -s Bitcoin```
-## Mode 20
-### Generate passphrase from words+ -n ? random letters (a-z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 20 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 20 -n 8 -s Bitcoin```
-## Mode 21
-### Generate passphrase from words+ -n ? random letters (A-Z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 21 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 21 -n 8 -s Bitcoin```
-## Mode 22
-### Generate passphrase from words+ -n ? random letters (A-Za-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 22 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 22 -n 8 -s Bitcoin```
-## Mode 23
-### Generate passphrase from words+ -n ? random letters (a-zA-Z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 23 -n 8 -s Bitcoin```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 23 -n 8 -s Bitcoin```
-## Mode 24
-### Generate passphrase from words+ -n ? random letters (a-zA-Z0-9+symbols)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 24 -n 8 -s Bitcoin Bitcoin2 is work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 24 -n 8 -s Bitcoin Bitcoin2 is work```
-## Mode 25
-### Generate passphrase from words+ -n ? random russian letters (а-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 25 -n 8 -s Привет```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 25 -n 8 -s Можно слова через пробел```
-## Mode 26
-### Generate passphrase from words+ -n ? random russian letters (А-Я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 26 -n 8 -s Привет```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 26 -n 8 -s Слова можно через пробел```
-## Mode 27
-### Generate passphrase from words+ -n ? random russian letters (А-Яа-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 27 -n 8 -s Привет```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 27 -n 8 -s Слова можно через пробел``` 
-## Mode 28
-### Generate passphrase from words+ -n ? random russian letters (А-Яа-я0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 28 -n 8 -s Привет```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 28 -n 8 -s Слова можно через пробел``` 
-## Mode 29
-### Generate passphrase from words+ -n ? random russian letters (А-Яа-я0-9+symbols)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 29 -n 8 -s Привет```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 29 -n 8 -s Слова можно через пробел``` 
-## Mode 30
-### Generate passphrase from words(space)+ -n ? random letters (0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 30 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 30 -n 8 -s HELLO its work```
-## Mode 31
-### Generate passphrase from words(space)+ -n ? random letters (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 31 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 31 -n 8 -s HELLO its work```
-## Mode 32
-### Generate passphrase from words(space)+ -n ? random letters (A-Z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 32 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 32 -n 8 -s HELLO its work```
-## Mode 33
-### Generate passphrase from words(space)+ -n ? random letters (a-z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 33 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 33 -n 8 -s HELLO its work```
-## Mode 34
-### Generate passphrase from words(space)+ -n ? random letters (A-Z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 34 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 34 -n 8 -s HELLO its work```
-## Mode 35
-### Generate passphrase from words(space)+ -n ? random letters (A-Za-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 35 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 35 -n 8 -s HELLO its work```
-## Mode 36
-### Generate passphrase from words(space)+ -n ? random letters (A-Za-z0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 36 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 36 -n 8 -s HELLO its work```
-## Mode 37
-### Generate passphrase from words(space)+ -n ? random letters (A-Za-z0-9+symbols)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 37 -n 8 -s HELLO its work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 37 -n 8 -s HELLO its work```
-## Mode 38
-### Generate passphrase from words(space)+ -n ? random russian letters (а-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 38 -n 8 -s Юля```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 38 -n 8 -s Вася```
-## Mode 39
-### Generate passphrase from words(space)+ -n ? random russian letters (А-Я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 39 -n 8 -s Юля```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 39 -n 8 -s Вася```
-## Mode 40
-### Generate passphrase from words(space)+ -n ? random russian letters (А-Яа-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 40 -n 8 -s Юля```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 40 -n 8 -s Вася```
-## Mode 41
-### enerate passphrase from words(space)+ -n ? random russian letters (А-Яа-я)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 41 -n 8 -s Юля```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 41 -n 8 -s Вася```
-## Mode 42
-### Generate passphrase from words(space)+ -n ? random russian letters (А-Яа-я0-9)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 42 -n 8 -s Юля```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 42 -n 8 -s Вася```
-## Mode 43
-### Generate passphrase use mask L(llllllll)dd
-#### Generate a words Alex78, Julia92...
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 43 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 43 -n 8```
-## Mode 44
-### Generate passphrase use mask L(llllllll)dddd
-#### Generate a words Alex1978, Julia1992...
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 44 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 44 -n 8```
-## Mode 45
-### Generate passphrase use mask L(llllllll)dddddd
-#### Generate a words Alex301978, Julia201992...
- - For CPU: LostCoins.exe -t 1 -f test.bin -r 45 -n 8
- - For GPU: LostCoins.exe -t 0 -g -i 0 -f test.bin -r 45 -n 8 
-## Mode 46
-### Generate random 2 word 3-9 letters (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 46```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 46```
-## Mode 47
-### Passphrase(space) + random 2 word 3-9 letters (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 47 -s LostCoins is work```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 47 -s LostCoins is work```
-## Mode 48
-### Mnemonic 12 words 3-5 (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 48```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 48```
-## Mode 49
-### Mnemonic 12 words 3-7 (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 49```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 49``` 
-## Mode 50
-### Mnemonic 12 words 3-10 (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 50```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 50``` 
-## Mode 51
-### Passphrase(space)+ 2 random words 3-9 (a-z)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 51 -n 8 -s HELLO```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 51 -n 8 -s HELLO```
-## Mode 52
-### Start hex+ -n random value(0-f)
-#### Examle for puzzle 64
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 52 -n 15 -s 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 52 -n 15 -s 8```
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 52 -n 10 -s 800000```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 52 -n 10 -s 800000```
-## Mode 53
-### Generate random Public keys in a specific bit range 1-256 bit
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 53 -n 256```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 53 -n 256```
-#### For random in all ranges use -n 0 to display hashes, use -d 1
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 53 -n 0 -d 1```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 53 -n 0 -d 1```
-## Mode 54 In development
-### Sequential continuation of the starting word
-#### Very slow algaritm (For one CPU core only!)
-#### Passphrase -> Passphrasf -> PaszzzzzzZ - ZZZZZZZZZZZ (Uld)
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 54 -s Example```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 54 -s Hello```
-## Mode 55
-### Generate pass from -n ? random symbols
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 55 -n 8```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 55 -n 8```
-## Mode 56
-### Random generation in the range between the start and end hash
- - For CPU: ```LostCoins.exe -t 1 -f test.bin -r 56 -s 4c844bcb8681f0fedd56d5babf -z 8526c8820af81a94616040745a633eaf89 -d 1```
- - For GPU: ```LostCoins.exe -t 0 -g -i 0 -f test.bin -r 56 --s 1c844bcb8681f0fedd56d5babf -z d526c8820af81a94616040745a633eaf89 -d 1```
- - After the tests, disable the display of hashes -d 2
-## Mode 57-99 Possible modes.
- - Generate a mnemonic of words from a file
- - Loading phrases from a text file
- - Sequential generation of letters on the GPU Example: aaa, aab, aaZ, ZZZZ...
- - Setting a mask for generating words [Example mask](https://github.com/hashcat/maskprocessor)
- - The function of adding different languages to generate passphrases
- - If you are a programmer and can implement additional functions for LostCoins, this is welcome.
+ 
+ ## Mode 2 (Best speed GPU)
+ ### Exact accurate bit by bit search in a range
+ - For CPU ```LostCoins.exe -t 6 -f test.bin -r 2 -n 64```
+ - For GPU ```LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 2 -n 64```
+ ```
+ C:\Users\user>LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 2 -n 64
+
+ LostCoins v1.0
+
+ SEARCH MODE  : COMPRESSED
+ DEVICE       : GPU
+ CPU THREAD   : 0
+ GPU IDS      : 0
+ GPU GRIDSIZE : 288x512
+ RANDOM MODE  : 2
+ ROTOR SPEED  : HIGH
+ CHARACTERS   : 64
+ PASSPHRASE   :
+ PASSPHRASE 2 :
+ DISPLAY MODE : 2
+ TEXT COLOR   : 15
+ MAX FOUND    : 256
+ HASH160 FILE : test.bin
+ OUTPUT FILE  : Found.txt
+
+ Loading      : 100 %
+ Loaded       : 75,471 address
+
+Bloom at 0000020DFA65CAC0
+  Version     : 2.1
+  Entries     : 150942
+  Error       : 0,0000010000
+  Bits        : 4340363
+  Bits/Elem   : 28,755175
+  Bytes       : 542546 (0 MB)
+  Hash funcs  : 20
+
+  Start Time  : Thu Aug 19 12:29:08 2021
+
+  Random mode : 2
+  Random      : Finding in a range
+  Use range   : 64 (bit)
+  Rotor       : Random generate hex in range 64 (bit)
+  Site        : https://github.com/phrutis/LostCoins
+  Donate      : bc1qh2mvnf5fujg93mwl8pe688yucaw9sflmwsukz9
+
+  GPU         : GPU #0 NVIDIA GeForce RTX 2070 (36x64 cores) Grid(288x512)
+
+ [00:01:03] [CPU+GPU: 1274,81 Mk/s] [GPU: 1274,81 Mk/s] [T: 77,007,421,440] [F: 0]
+ ```
+ ## Mode 3
+ ### Search randomly for hash part + -n values (0-f)
+ For finding a puzzles 64 example: 
+ LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 3 -n 15 -s 8 -d 1
+ ```
+ C:\Users\user>LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 3 -n 10 -s f01cfea414140de5dae2223b0036 -d 1
+
+ LostCoins v1.0
+
+ SEARCH MODE  : COMPRESSED
+ DEVICE       : GPU
+ CPU THREAD   : 0
+ GPU IDS      : 0
+ GPU GRIDSIZE : 288x512
+ RANDOM MODE  : 3
+ ROTOR SPEED  : SLOW (hashes sha256 are displayed)
+ CHARACTERS   : 10
+ PASSPHRASE   : f01cfea414140de5dae2223b0036
+ PASSPHRASE 2 :
+ DISPLAY MODE : 1
+ TEXT COLOR   : 15
+ MAX FOUND    : 50
+ HASH160 FILE : test.bin
+ OUTPUT FILE  : Found.txt
+
+ Loading      : 100 %
+ Loaded       : 75,471 address
+
+Bloom at 000001BE7A7EC9D0
+  Version     : 2.1
+  Entries     : 150942
+  Error       : 0,0000010000
+  Bits        : 4340363
+  Bits/Elem   : 28,755175
+  Bytes       : 542546 (0 MB)
+  Hash funcs  : 20
+
+  Start Time  : Thu Aug 19 13:34:39 2021
+
+  Random mode : 3
+  Random      : Finding a puzzle in a ranges
+  Start       : f01cfea414140de5dae2223b00360000000001
+  Finish      : f01cfea414140de5dae2223b0036ffffffffff
+  Range       : f01cfea414140de5dae2223b0036 + 10 x (0-f)
+  Site        : https://github.com/phrutis/LostCoins
+  Donate      : bc1qh2mvnf5fujg93mwl8pe688yucaw9sflmwsukz9
+
+  GPU         : GPU #0 NVIDIA GeForce RTX 2070 (36x64 cores) Grid(288x512)
+
+ [F01CFEA414140DE5DAE2223B0036A3F92F05BA] (152 bit)
+ ```
+ 
+  ## Mode 4 (Best speed GPU)
+  ### Exact random search between specified ranges
+ ```
+ C:\Users\user>LostCoins.exe -t 0 -g -i 0 -x 288,512 -f test.bin -r 4 -s 64 -z 72
+
+ LostCoins v1.0
+
+ SEARCH MODE  : COMPRESSED
+ DEVICE       : GPU
+ CPU THREAD   : 0
+ GPU IDS      : 0
+ GPU GRIDSIZE : 288x512
+ RANDOM MODE  : 4
+ ROTOR SPEED  : HIGH
+ CHARACTERS   : 0
+ PASSPHRASE   : 64
+ PASSPHRASE 2 : 72
+ DISPLAY MODE : 2
+ TEXT COLOR   : 15
+ MAX FOUND    : 50
+ HASH160 FILE : test.bin
+ OUTPUT FILE  : Found.txt
+
+ Loading      : 100 %
+ Loaded       : 75,471 address
+
+Bloom at 0000024CFFD6D970
+  Version     : 2.1
+  Entries     : 150942
+  Error       : 0,0000010000
+  Bits        : 4340363
+  Bits/Elem   : 28,755175
+  Bytes       : 542546 (0 MB)
+  Hash funcs  : 20
+
+  Start Time  : Thu Aug 19 13:49:09 2021
+
+  Random mode : 4
+  Random      : Finding in a range
+  Start range : 64 (bit)
+  End range   : 72 (bit)
+  Rotor       : Generate random hex in ranges 64 <~> 72
+  Site        : https://github.com/phrutis/LostCoins
+  Donate      : bc1qh2mvnf5fujg93mwl8pe688yucaw9sflmwsukz9
+
+  GPU         : GPU #0 NVIDIA GeForce RTX 2070 (36x64 cores) Grid(288x512)
+
+ [00:01:46] [CPU+GPU: 1284,81 Mk/s] [GPU: 1214,81 Mk/s] [T: 124,117,843,968] [F: 0]
+ ```
+## Modes 5-54 (additional)
+### Find lost coins using a passphrase 
+### Find lost coins with mnemonic 12 random words
+- [List of additional 5-54 modes](https://github.com/phrutis/LostCoins/blob/main/Others/Modes.md)
+
 ## Building
 - Microsoft Visual Studio Community 2019
 - CUDA version 10.22
